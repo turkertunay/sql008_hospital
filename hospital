@@ -1,0 +1,77 @@
+CREATE DATABASE HospitalDB;
+
+
+USE HospitalDB;
+
+CREATE TABLE Patients (
+    PatientID INT PRIMARY KEY,
+    FirstName VARCHAR(50),
+    LastName VARCHAR(50),
+    Age INT,
+    Gender VARCHAR(10)
+);
+
+CREATE TABLE Doctors (
+    DoctorID INT PRIMARY KEY,
+    FirstName VARCHAR(50),
+    LastName VARCHAR(50),
+    Specialization VARCHAR(50)
+);
+CREATE TABLE Appointments (
+    AppointmentID INT PRIMARY KEY,
+    PatientID INT,
+    DoctorID INT,
+    AppointmentDate DATETIME,
+    FOREIGN KEY (PatientID) REFERENCES Patients(PatientID),
+    FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID)
+);
+
+CREATE TABLE MedicalRecords (
+    RecordID INT PRIMARY KEY,
+    PatientID INT,
+    DoctorID INT,
+    AppointmentID INT,
+    Diagnosis TEXT,
+    Prescription TEXT,
+    FOREIGN KEY (PatientID) REFERENCES Patients(PatientID),
+    FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID),
+    FOREIGN KEY (AppointmentID) REFERENCES Appointments(AppointmentID)
+);
+
+INSERT INTO Patients (PatientID, FirstName, LastName, Age, Gender)
+VALUES
+    (1, 'Ali', 'Can', 25, 'male'),
+    (2, 'Ayse', 'Su', 18, 'male'),
+    (3, 'Can', 'Cem', 43, 'female');
+
+INSERT INTO Doctors (DoctorID, FirstName, LastName, Specialization)
+VALUES
+    (1, 'Dr. Elif', 'Ok', 'Cardiologist'),
+    (2, 'Dr. Buse', 'San', 'Orthopedic Surgeon'),
+    (3, 'Dr. Ahmet', 'Ak', 'Pediatrician');
+
+INSERT INTO Appointments (AppointmentID, PatientID, DoctorID, AppointmentDate)
+VALUES
+    (1, 1, 1, '2023-01-10 09:00:00'),
+    (2, 2, 2, '2023-02-15 14:30:00'),
+    (3, 3, 3, '2023-03-20 10:45:00');
+
+INSERT INTO MedicalRecords (RecordID, PatientID, DoctorID, AppointmentID, Diagnosis, Prescription)
+VALUES
+    (1, 1, 1, 1, 'High Blood Pressure', 'Medication A, lifestyle changes'),
+    (2, 2, 2, 2, 'Fractured Arm', 'Cast and painkillers'),
+    (3, 3, 3, 3, 'Common Cold', 'Rest and fluids');
+
+SELECT
+    Patients.FirstName,
+    Patients.LastName,
+    Appointments.AppointmentDate,
+    Doctors.FirstName AS DoctorFirstName,
+    Doctors.LastName AS DoctorLastName,
+    MedicalRecords.Diagnosis,
+    MedicalRecords.Prescription
+FROM
+    Patients
+JOIN Appointments ON Patients.PatientID = Appointments.PatientID
+JOIN Doctors ON Appointments.DoctorID = Doctors.DoctorID
+LEFT JOIN MedicalRecords ON Appointments.AppointmentID = MedicalRecords.AppointmentID;
